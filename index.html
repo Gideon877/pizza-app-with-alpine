@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/lodash@4.17.21/lodash.min.js"></script>
+    <script src="js/index.js"></script>
+    <script src="js/app.js"></script>
+    <title>Pizza Pamphlet</title>
+</head>
+
+<body>
+    <div class="container" x-data="data">
+        <h1 class="header" align="'center">Pizza</h1>
+        <h6 style="font-family: 'Lucida Sans';">You are logged in as: <span x-text="currentUser.username"></span> </h6>
+
+
+        <div class="cartTotal">
+            <strong>Total price</strong>
+            <span class="cartTotalPrice" x-text="getTotal()">0.00</span>
+            <a href="#">
+                <img src="shopping-cart.png" alt="">
+            </a>
+        </div>
+
+
+        <div class="cart" x-show="showCart()" >
+        <!-- <div class="cart" x-show="true"> -->
+            <h3>Shopping Cart</h3>
+            <img src="shopping-cart.png" alt="">
+
+            <!-- Need to add styling, functionality and qty -->
+
+            <table class="table">
+                <thead>
+                    <td></td>
+                    <td>Price</td>
+                    <td>Qty</td>
+                    <td>Action</td>
+                </thead>
+                <template x-for="pizza in orders">
+                    <tr x-show="pizza.qty > 0" :class="pizza.size">
+                        <td><strong x-text="pizza.totalDescription()">Small pizzas total:</strong></td>
+                        <td><span x-text="pizza.getSubTotal()"></span></td>
+                        <td><span x-text="pizza.qty"></span>x</td>
+                        <td>
+                            <div class="btn-group">
+                                <button class="btn btn-info" @click="pizza.subtract()">-</button>
+                                <button class="btn btn-info" @click="pizza.add()">+</button>
+                            </div>
+                        </td>
+                    </tr>
+
+                </template>
+                <tr>
+                    <td><strong>Total price</strong></td>
+                    <td><span class="totalPrice" x-text="getTotal()">0.00</span></td>
+                    <td><strong x-text="getQtyTotal()"></strong>x</td>
+                    <td>
+                        <button class="btn btn-danger" :disabled="orders.length < 1" @click="clearCart()">X</button>
+                    </td>
+                </tr>
+            </table>
+
+            <hr />
+
+            <!-- Checkout Form -->
+            <div class="row">
+                <div class="col-auto">
+                    <div class="input-group mb-3">
+                        <span class="input-group-text">R</span>
+                        <input x-model="userAmount" type="number" class="form-control" min="0" aria-label="Amount (to the nearest dollar)">
+                        <button x-bind:disabled="userAmount < total()" class="btn btn-success" x-on:click="onCheckout()">Checkout</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <hr />
+
+        <!-- Specials -->
+        <div class="specials">
+            <template x-for="pizza in pizzas">
+                <div :class="pizza.size">
+                    <img :src="pizza.img" alt="">
+                    <h2 x-text="pizza.name"></h2>
+                    <h3 x-text="pizza.price"></h3>
+                    <i x-text="pizza.description"></i>
+                    <br />
+                    <button x-show="!pizza.onCart" class="btn btn-outline-info" @click="order(pizza)">Order</button>
+                    <button x-show="pizza.onCart" x-bind:disabled="pizza.qty > 1" class="btn btn-outline-danger"
+                        @click="remove(pizza)">Remove</button>
+                </div>
+            </template>
+        </div>
+
+        <hr />
+
+        <!-- Footer -->
+        <div class="footer">
+            <div class="contact">
+                <strong>Contact us at:</strong>
+                (021)-541-1000
+
+                <strong>twitter /fb /insta </strong> @perfectpizza
+            </div>
+            <div class="address">
+                Pizza Plaza
+                <br>
+                Dough Road
+                <br>
+                Base Town
+                <br>
+                7890
+            </div>
+        </div>
+    </div>
+
+
+</body>
+
+</html>
