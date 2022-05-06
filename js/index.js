@@ -2,7 +2,7 @@
 const prices = {
     large: 114.99,
     small: 48.99,
-    medium: 78.99
+    medium: 78.99,
 }
 
 class Pizza {

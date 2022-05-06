@@ -17,7 +17,7 @@
 
 <body>
     <div class="container" x-data="data">
-        <h1 class="header" align="'center">Pizza</h1>
+        <h1 class="header" align="'center" x-text="header"></h1>
         <h6 style="font-family: 'Lucida Sans';">You are logged in as: <span x-text="currentUser.username"></span> </h6>
 
 
@@ -25,59 +25,79 @@
             <strong>Total price</strong>
             <span class="cartTotalPrice" x-text="getTotal()">0.00</span>
             <a href="#">
-                <img src="shopping-cart.png" alt="">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-cart"
+                    viewBox="0 0 16 16">
+                    <path
+                        d="M0 1.5A.5.5 0 0 1 .5 1H2a.5.5 0 0 1 .485.379L2.89 3H14.5a.5.5 0 0 1 .491.592l-1.5 8A.5.5 0 0 1 13 12H4a.5.5 0 0 1-.491-.408L2.01 3.607 1.61 2H.5a.5.5 0 0 1-.5-.5zM3.102 4l1.313 7h8.17l1.313-7H3.102zM5 12a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm7 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm-7 1a1 1 0 1 1 0 2 1 1 0 0 1 0-2zm7 0a1 1 0 1 1 0 2 1 1 0 0 1 0-2z" />
+                </svg>
             </a>
         </div>
 
 
-        <div class="cart" x-show="showCart()" >
-        <!-- <div class="cart" x-show="true"> -->
-            <h3>Shopping Cart</h3>
+        <div class="cart" x-show="showCart()">
+            <!-- <div class="cart" x-show="true"> -->
+            <h3>Shopping Cart
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-cart"
+                    viewBox="0 0 16 16">
+                    <path
+                        d="M0 1.5A.5.5 0 0 1 .5 1H2a.5.5 0 0 1 .485.379L2.89 3H14.5a.5.5 0 0 1 .491.592l-1.5 8A.5.5 0 0 1 13 12H4a.5.5 0 0 1-.491-.408L2.01 3.607 1.61 2H.5a.5.5 0 0 1-.5-.5zM3.102 4l1.313 7h8.17l1.313-7H3.102zM5 12a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm7 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm-7 1a1 1 0 1 1 0 2 1 1 0 0 1 0-2zm7 0a1 1 0 1 1 0 2 1 1 0 0 1 0-2z" />
+                </svg>
+            </h3>
             <img src="shopping-cart.png" alt="">
 
             <!-- Need to add styling, functionality and qty -->
 
-            <table class="table">
-                <thead>
-                    <td></td>
-                    <td>Price</td>
-                    <td>Qty</td>
-                    <td>Action</td>
-                </thead>
-                <template x-for="pizza in orders">
-                    <tr x-show="pizza.qty > 0" :class="pizza.size">
-                        <td><strong x-text="pizza.totalDescription()">Small pizzas total:</strong></td>
-                        <td><span x-text="pizza.getSubTotal()"></span></td>
-                        <td><span x-text="pizza.qty"></span>x</td>
-                        <td>
-                            <div class="btn-group">
-                                <button class="btn btn-info" @click="pizza.subtract()">-</button>
-                                <button class="btn btn-info" @click="pizza.add()">+</button>
-                            </div>
-                        </td>
-                    </tr>
 
-                </template>
-                <tr>
-                    <td><strong>Total price</strong></td>
-                    <td><span class="totalPrice" x-text="getTotal()">0.00</span></td>
-                    <td><strong x-text="getQtyTotal()"></strong>x</td>
-                    <td>
-                        <button class="btn btn-danger" :disabled="orders.length < 1" @click="clearCart()">X</button>
-                    </td>
-                </tr>
-            </table>
 
             <hr />
 
             <!-- Checkout Form -->
             <div class="row">
-                <div class="col-auto">
+                <div class="col-sm-8">
+                    <table class="table">
+                        <thead>
+                            <td></td>
+                            <td>Price</td>
+                            <td>Qty</td>
+                            <td>Action</td>
+                        </thead>
+                        <template x-for="pizza in orders">
+                            <tr x-show="pizza.qty > 0" :class="pizza.size">
+                                <td><strong x-text="pizza.totalDescription()">Small pizzas total:</strong></td>
+                                <td><span x-text="pizza.getSubTotal()"></span></td>
+                                <td><span x-text="pizza.qty"></span>x</td>
+                                <td>
+                                    <div class="btn-group">
+                                        <button class="btn btn-info" @click="pizza.subtract()">-</button>
+                                        <button class="btn btn-info" @click="pizza.add()">+</button>
+                                    </div>
+                                </td>
+                            </tr>
+
+                        </template>
+                        <tr>
+                            <td><strong>Total price</strong></td>
+                            <td><span class="totalPrice" x-text="getTotal()">0.00</span></td>
+                            <td><strong x-text="getQtyTotal()"></strong>x</td>
+                            <td>
+                                <button class="btn btn-danger" :disabled="orders.length < 1"
+                                    @click="clearCart()">X</button>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+
+                <div class="col-sm-4">
                     <div class="input-group mb-3">
                         <span class="input-group-text">R</span>
-                        <input x-model="userAmount" type="number" class="form-control" min="0" aria-label="Amount (to the nearest dollar)">
-                        <button x-bind:disabled="userAmount < total()" class="btn btn-success" x-on:click="onCheckout()">Checkout</button>
+                        <input x-model="userAmount" type="number" class="form-control" min="0"
+                            aria-label="Amount (to the nearest dollar)">
+                        <button x-bind:disabled="userAmount < total()" class="btn btn-success"
+                            x-on:click="onCheckout()">Checkout</button>
                     </div>
+                    <div x-show="appMessage.show()" x-text="appMessage.message" :class="appMessage.color"></div>
+                </div>
+                <div class="col-auto">
                 </div>
             </div>
         </div>

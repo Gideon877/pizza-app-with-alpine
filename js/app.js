@@ -1,10 +1,13 @@
 document.addEventListener('alpine:init', () => {
     Alpine.data('data', () => {
         return {
+            header: 'Pizza Hurt',
             init() {
                 this.pizzas = this.pizzas
                     .map(pizza =>
                         new Pizza(pizza.size, pizza.description));
+
+                this.order(this.pizzas[0])
             },
             getQtyTotal() {
                 return _.sumBy(this.orders, order => Number(order.qty))
@@ -16,21 +19,41 @@ document.addEventListener('alpine:init', () => {
             getTotal() {
                 return `R${this.total()}`
             },
-            onCheckout(){
+            onCheckout() {
 
-                if(this.userAmount >= this.total()) {
-                    this.clearCart();
+                setTimeout(()=> this.appMessage.message = '', 5000)
+
+                if (this.userAmount >= this.total()) {
+                    // receipt
+                    const userChange = Number(this.userAmount) - Number(this.total());
+                    this.appMessage.message = `Payment confirmed!
+                        <br/>
+                        Paid: R${this.userAmount}
+                        Item(s): x${this.getQtyTotal()} 
+                        Change: R${userChange}
+                        \nThanks for shopping with us. `
+
+                    this.appMessage.color = 'alert alert-success'
+                    // this.clearCart();
 
                 } else {
                     alert('Insufficient balance!');
+                    this.appMessage = {
+                        ...this.appMessage,
+                        color:'alert alert-danger',
+                        message: ''
+                    }
                 }
+
+
                 
+
                 // get amount
                 // get diff with total
                 // return message
             },
             clearCart() {
-                if(confirm('Would you like to clear the cart?')) {
+                if (confirm('Would you like to clear the cart?')) {
                     this.orders.forEach(order => {
                         order.onCart = false;
                         order.qty = 0;
@@ -40,7 +63,7 @@ document.addEventListener('alpine:init', () => {
                 }
             },
             remove(pizza) {
-                if(confirm(`Would you like to remove ${pizza.name} from cart?`)) {
+                if (confirm(`Would you like to remove ${pizza.name} from cart?`)) {
                     this.orders = this.orders.filter(o => o.size !== pizza.size);
                     pizza.onCart = false;
                     pizza.qty = 0;
@@ -108,7 +131,14 @@ document.addEventListener('alpine:init', () => {
             currentUser: {
                 username: 'Gideon877',
             },
-            userAmount: ''
+            userAmount: '',
+            appMessage: {
+                message: '',
+                color: 'alert alert-light',
+                show() {
+                    return !_.isEmpty(this.message)
+                },
+            }
 
 
         }
