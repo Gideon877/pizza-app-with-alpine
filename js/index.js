@@ -12,6 +12,7 @@ class Pizza {
     constructor(size, description) {
         this.name = `${_.capitalize(size)} Pizza`;
         this.size = size;
+        this.available = size == 'large' ? 10 : size == 'medium' ? 50 : 35;
         this.description = description;
         this.price = prices[size]
         this.img = `https://image.shutterstock.com/image-vector/italian-pizza-tomato-sausage-olive-600w-554691619.jpg`

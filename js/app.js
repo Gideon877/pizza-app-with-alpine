@@ -5,6 +5,7 @@ document.addEventListener('alpine:init', () => {
     Alpine.data('data', () => {
         return {
             header: 'Pizza Hurt',
+            themeColor: 'blue',
             init() {
                 this.pizzas = this.pizzas
                     .map(pizza =>
