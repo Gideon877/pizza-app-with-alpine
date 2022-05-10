@@ -1,3 +1,6 @@
+// todo: add cart process workflow with timeout simulation -> order -> pay -> wait -> delivered -> receipt
+// todo: add loading on process, and update show on done
+
 document.addEventListener('alpine:init', () => {
     Alpine.data('data', () => {
         return {
