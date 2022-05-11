@@ -8,15 +8,24 @@ document.addEventListener('alpine:init', () => {
             themeColor: 'blue',
             init() {
 
-                if(_.isEmpty(this.currentUser)) {
+                if (_.isEmpty(this.currentUser)) {
                     this.currentUser = new User('Gideon877');
+                    if (localStorage.getItem('user') == null) {
+                        localStorage.setItem('user', JSON.stringify(this.currentUser));
+                    } else {
+                        const localUser = JSON.parse(localStorage.getItem('user'));
+                        this.currentUser = Object.assign(new User(), localUser);
+
+                    }
                 }
-                console.log(this.currentUser.getBalance());
                 this.pizzas = this.pizzas
                     .map(pizza =>
                         new Pizza(pizza.size, pizza.description));
 
                 // this.order(this.pizzas[2])
+            },
+            canBuy() {
+               return this.currentUser.balance >= total();
             },
             getQtyTotal() {
                 return _.sumBy(this.orders, order => Number(order.qty))
@@ -66,6 +75,7 @@ document.addEventListener('alpine:init', () => {
                         loading: false,
                     };
                     this.steps = 1;
+                    new Receipt(this.currentUser, this.orders);
                     this.clearCart()
                     this.showMenu = true;
                     this.checkoutData.loading = false;
@@ -75,19 +85,19 @@ document.addEventListener('alpine:init', () => {
             },
             onCheckout() {
 
-
-                console.log(this.currentUser, this.total());
-
                 this.currentUser.withdraw(this.total());
+                localStorage.setItem('user', JSON.stringify(this.currentUser));
+
                 this.checkoutData.loading = true
                 this.steps = 4
                 setTimeout(() => {
+                    
                     this.checkoutData = {
                         ...this.checkoutData,
                         loading: false,
                     };
-                    this.step_3()
                 }, 3000);
+                this.step_3();
 
                 // setTimeout(() => this.appMessage.message = '', 5000)
 

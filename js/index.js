@@ -5,9 +5,22 @@ const prices = {
     medium: 78.99,
 }
 
+class Receipt {
+
+    constructor(user = {}, cart = []) {
+        this.user = user;
+        this.cart = cart;
+    }
+
+    getReceipt() {
+        this.cart.forEach(element => {
+            console.log(`Description: ${element.totalDescription()} size: ${element.size}`)
+        });
+    }
+}
 
 class Wallet {
-    balance = 1500;
+    balance = 800.97;
     
     deposit(amount) {
         this.balance += Number(amount);
@@ -22,7 +35,17 @@ class Wallet {
     }
 }
 
-class User extends Wallet {
+class Person extends Wallet {
+    
+    constructor(firstName = 'John', lastName='Smith', address='50 Harry Straat, Boon Again, 8000') {
+        super();
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.address = address;
+    }
+}
+
+class User extends Person{
     constructor(username) {
         super();
         this.username = username;
@@ -74,7 +97,6 @@ class Pizza {
     }
 
     showOrder() {
-        console.log(this.qty, ' showOrder');
         return this.qty > 0
     }
 

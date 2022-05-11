@@ -54,7 +54,7 @@
                 <b x-text="currentUser.getBalance()"></b>
             </a>
             <div class="right menu">
-                <a class="item active">
+                <a class="item active" x-show="getQtyTotal() > 0">
                     <i class="cart icon"></i>
                     <b x-text="getQtyTotal()">100</b>
                 </a>
@@ -116,7 +116,7 @@
                     </div>
                     <div class="field">
                         <label>Balance</label>
-                        <input x-model="currentUser.balance" placeholder="balance" type="text">
+                        <input x-model="currentUser.balance" readonly="" placeholder="balance" type="text">
                     </div>
                     <div class="field">
                         <label>Confirm details</label>
@@ -126,8 +126,8 @@
                     </div>
                 </div>
                 <div class="field-inline" x-show="total() > currentUser.balance"">
-                  <div class=" message">
-                    Insufficient funds. Please top up.
+                  <div class="ui red message">
+                    Insufficient funds. Please top up on your user profile
                 </div>
             </div>
         </div>
