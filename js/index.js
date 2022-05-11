@@ -5,6 +5,32 @@ const prices = {
     medium: 78.99,
 }
 
+
+class Wallet {
+    balance = 1500;
+    
+    deposit(amount) {
+        this.balance += Number(amount);
+    }
+
+    withdraw(amount) {
+        this.balance -= Number(amount);
+    }
+
+    getBalance() {
+        return `R${this.balance.toFixed(2)}`
+    }
+}
+
+class User extends Wallet {
+    constructor(username) {
+        super();
+        this.username = username;
+    }
+
+
+}
+
 class Pizza {
     qty = 0;
     id = 1;
@@ -15,7 +41,7 @@ class Pizza {
         this.available = size == 'large' ? 10 : size == 'medium' ? 50 : 35;
         this.description = description;
         this.price = prices[size]
-        this.img = `https://image.shutterstock.com/image-vector/italian-pizza-tomato-sausage-olive-600w-554691619.jpg`
+        this.img = `https://www.pngitem.com/pimgs/m/526-5261209_pizza-top-view-png-png-download-pepperoni-png.png`
     }
     
     add() {
@@ -45,6 +71,11 @@ class Pizza {
 
     setStatus() {
         this.onCart = !this.onCart;
+    }
+
+    showOrder() {
+        console.log(this.qty, ' showOrder');
+        return this.qty > 0
     }
 
     totalDescription() {

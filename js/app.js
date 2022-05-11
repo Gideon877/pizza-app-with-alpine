@@ -4,14 +4,19 @@
 document.addEventListener('alpine:init', () => {
     Alpine.data('data', () => {
         return {
-            header: 'Pizza Hurt',
+            header: 'Pizza Hurt Menu',
             themeColor: 'blue',
             init() {
+
+                if(_.isEmpty(this.currentUser)) {
+                    this.currentUser = new User('Gideon877');
+                }
+                console.log(this.currentUser.getBalance());
                 this.pizzas = this.pizzas
                     .map(pizza =>
                         new Pizza(pizza.size, pizza.description));
 
-                this.order(this.pizzas[0])
+                // this.order(this.pizzas[2])
             },
             getQtyTotal() {
                 return _.sumBy(this.orders, order => Number(order.qty))
@@ -23,34 +28,93 @@ document.addEventListener('alpine:init', () => {
             getTotal() {
                 return `R${this.total()}`
             },
+            checkOutSteps() {
+                this.step_1();
+                alert(this.checkoutData.state)
+                // press button, hide cart, show status
+            },
+            checkoutData: {
+                loading: false,
+                message: '',
+                error: false,
+                state: null
+            },
+            showMenu: true,
+            showPayment: true,
+            steps: 1,
+            step_1() {
+                this.checkoutData.loading = true;
+                this.checkoutData.state = 'in_process'
+                this.showMenu = false;
+                setTimeout(() => {
+                    this.checkoutData = {
+                        ...this.checkoutData,
+                        loading: false,
+                    };
+                    this.step_2()
+                }, 3000);
+            },
+            step_2() {
+                this.steps++;
+
+            },
+            step_3() {
+                this.steps = 3;
+                setTimeout(() => {
+                    this.checkoutData = {
+                        ...this.checkoutData,
+                        loading: false,
+                    };
+                    this.steps = 1;
+                    this.clearCart()
+                    this.showMenu = true;
+                    this.checkoutData.loading = false;
+                    this.checkoutData.state = null;
+                }, 3000);
+
+            },
             onCheckout() {
 
-                setTimeout(()=> this.appMessage.message = '', 5000)
 
-                if (this.userAmount >= this.total()) {
-                    // receipt
-                    const userChange = Number(this.userAmount) - Number(this.total());
-                    this.appMessage.message = `Payment confirmed!
-                        <br/>
-                        Paid: R${this.userAmount}
-                        Item(s): x${this.getQtyTotal()} 
-                        Change: R${userChange}
-                        \nThanks for shopping with us. `
+                console.log(this.currentUser, this.total());
 
-                    this.appMessage.color = 'alert alert-success'
-                    // this.clearCart();
+                this.currentUser.withdraw(this.total());
+                this.checkoutData.loading = true
+                this.steps = 4
+                setTimeout(() => {
+                    this.checkoutData = {
+                        ...this.checkoutData,
+                        loading: false,
+                    };
+                    this.step_3()
+                }, 3000);
 
-                } else {
-                    alert('Insufficient balance!');
-                    this.appMessage = {
-                        ...this.appMessage,
-                        color:'alert alert-danger',
-                        message: ''
-                    }
-                }
+                // setTimeout(() => this.appMessage.message = '', 5000)
+
+                // if (this.userAmount >= this.total()) {
+                //     // receipt
+                //     const userChange = Number(this.userAmount) - Number(this.total());
+                //     this.appMessage.message = `Payment confirmed!
+                //         <br/>
+                //         Paid: R${this.userAmount}
+                //         Item(s): x${this.getQtyTotal()} 
+                //         Change: R${userChange}
+                //         \nThanks for shopping with us. `
+
+                //     this.appMessage.color = 'alert alert-success'
+                //     // this.clearCart();
+
+                // } else {
+                //     alert('Insufficient balance!');
+                //     this.appMessage = {
+                //         ...this.appMessage,
+                //         color: 'alert alert-danger',
+                //         message: ''
+                //     }
+                // }
 
 
-                
+
 
                 // get amount
                 // get diff with total
@@ -63,7 +127,8 @@ document.addEventListener('alpine:init', () => {
                         order.qty = 0;
                     })
                     this.userAmount = ''
-                    this.orders = []
+                    this.orders = [];
+                    this.init()
                 }
             },
             remove(pizza) {
@@ -74,29 +139,28 @@ document.addEventListener('alpine:init', () => {
                 }
             },
             order(pizza) {
-                if (!pizza.onCart) {
-                    // add to cart only if doesn't exist
-                    if (_
-                        .isEmpty(_
-                            .filter(this.orders,
-                                order =>
-                                    order.size === pizza.size
-                            )
+                // add to cart only if doesn't exist
+                if (_
+                    .isEmpty(_
+                        .filter(this.orders,
+                            order =>
+                                order.size === pizza.size
                         )
-                    ) {
+                    )
+                ) {
 
-                        pizza.add()
-                        this.orders.push(pizza)
-                    }
+                    pizza.add()
+                    this.orders.sort().push(pizza)
+                }
 
-                    if (pizza.qty === 0) {
-                        pizza.add()
-                    }
+                if (pizza.qty === 0) {
+                    pizza.add()
                 }
                 pizza.setStatus();
             },
             showCart() {
                 const orders = this.orders;
+                if (this.checkoutData.state != null) return false
                 if (orders.length == 0) {
                     return false
                 }
@@ -132,9 +196,7 @@ document.addEventListener('alpine:init', () => {
                         3 or less other toppings.`,
                 }
             ],
-            currentUser: {
-                username: 'Gideon877',
-            },
+            currentUser: {},
             userAmount: '',
             appMessage: {
                 message: '',
