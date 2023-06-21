@@ -107,16 +107,18 @@
         <!-- Specials -->
         <div class="specials">
             <template x-for="pizza in pizzas">
-                <div :class="pizza.size">
-                    <img :src="pizza.img" alt="">
-                    <h2 x-text="pizza.name"></h2>
-                    <h3 x-text="pizza.price"></h3>
-                    <i x-text="pizza.description"></i>
-                    <br />
-                    <button x-show="!pizza.onCart" class="btn btn-outline-info" @click="order(pizza)">Order</button>
-                    <button x-show="pizza.onCart" x-bind:disabled="pizza.qty > 1" class="btn btn-outline-danger"
-                        @click="remove(pizza)">Remove</button>
-                </div>
+                <div class="card">
+  <img :src="pizza.img" alt="" class="card-img-top">
+  <div class="card-body">
+    <h2 class="card-title" x-text="pizza.name"></h2>
+    <h3 class="card-text" x-text="pizza.price"></h3>
+    <p class="card-text"><i x-text="pizza.description"></i></p>
+    <br>
+    <button x-show="!pizza.onCart" class="btn btn-outline-info" @click="order(pizza)">Order</button>
+    <button x-show="pizza.onCart" x-bind:disabled="pizza.qty > 1" class="btn btn-outline-danger" @click="remove(pizza)">Remove</button>
+  </div>
+</div>
+
             </template>
         </div>
 
