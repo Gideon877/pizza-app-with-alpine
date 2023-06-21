@@ -71,14 +71,14 @@
         </div>
 
         <!-- Checkout steps -->
-        <div class="ui steps" x-show="orders.length > 0">
-            <div :class="steps == 1 ? 'active step' : 'step disabled'">
+        <div class="ui mini steps" x-show="orders.length > 0">
+            <div :class="steps == 1 ? 'active step' : 'completed step disabled'">
                 <i class="info icon"></i>
                 <div class="content">
                     <div class="title">Confirm Order</div>
                 </div>
             </div>
-            <div :class="steps == 2 ? 'active step' : (steps == 3)? 'step disabled' : 'step'">
+            <div :class="steps == 2 ? 'active step' : (steps == 3)? 'completed step disabled' : 'step'">
                 <i class="payment icon"></i>
                 <div class="content">
                     <div class="title">Billing</div>

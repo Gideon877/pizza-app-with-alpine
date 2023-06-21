@@ -7,6 +7,9 @@ const prices = {
 
 class Receipt {
 
+    date = moment(new Date()).format("ddd, DD MMMM YYYY, HH:mm:ss")
+    id = this.generateReceiptID()
+
     constructor(user = {}, cart = []) {
         this.user = user;
         this.cart = cart;
@@ -17,11 +20,23 @@ class Receipt {
             console.log(`Description: ${element.totalDescription()} size: ${element.size}`)
         });
     }
+
+    generateReceiptID() {
+        const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+        let receiptID = '';
+      
+        for (let i = 0; i < 8; i++) {
+          const randomIndex = Math.floor(Math.random() * characters.length);
+          receiptID += characters.charAt(randomIndex);
+        }
+      
+        return receiptID;
+      }
 }
 
 class Wallet {
     balance = 800.97;
-    
+
     deposit(amount) {
         this.balance += Number(amount);
     }
@@ -36,8 +51,8 @@ class Wallet {
 }
 
 class Person extends Wallet {
-    
-    constructor(firstName = 'John', lastName='Smith', address='50 Harry Straat, Boon Again, 8000') {
+
+    constructor(firstName = 'John', lastName = 'Smith', address = '50 Harry Straat, Boon Again, 8000') {
         super();
         this.firstName = firstName;
         this.lastName = lastName;
@@ -45,7 +60,7 @@ class Person extends Wallet {
     }
 }
 
-class User extends Person{
+class User extends Person {
     constructor(username) {
         super();
         this.username = username;
@@ -66,25 +81,27 @@ class Pizza {
         this.price = prices[size]
         this.img = `https://www.pngitem.com/pimgs/m/526-5261209_pizza-top-view-png-png-download-pepperoni-png.png`
     }
-    
+
     add() {
         this.qty++;
+        this.available++;
     }
-    
+
     subtract() {
         if (this.qty > 0) {
             this.qty--;
+            this.available--;
         }
 
-        if(this.qty == 0) {
+        if (this.qty == 0) {
             this.onCart = false
         }
     }
-    
+
     subTotal() {
         return (Number(this.qty) * Number(this.price)).toFixed(2);
     }
-    
+
     getSubTotal() {
         return `R${(Number(this.qty) * Number(this.price)).toFixed(2)}`
     }

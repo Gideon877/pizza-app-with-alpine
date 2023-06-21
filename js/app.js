@@ -5,7 +5,7 @@ document.addEventListener('alpine:init', () => {
     Alpine.data('data', () => {
         return {
             header: 'Pizza Hurt Menu',
-            themeColor: 'blue',
+            themeColor: 'pink',
             init() {
 
                 if (_.isEmpty(this.currentUser)) {
@@ -18,6 +18,26 @@ document.addEventListener('alpine:init', () => {
 
                     }
                 }
+                const savedReceipts = localStorage.getItem('receipts');
+                if (savedReceipts) {
+                    this.receipts = JSON.parse(savedReceipts);
+
+                    this.receipts.forEach((receipt) => {
+                        let total = 0;
+                        receipt.cart.forEach((cartItem) => {
+                            const itemTotal = cartItem.qty * cartItem.price;
+                            total += itemTotal;
+                            cartItem.total = itemTotal;
+                        });
+                        receipt.total = total.toFixed(2);
+                    });
+                }
+
+                else {
+                    this.receipts = [];
+                }
+
+                console.log(this.receipts);
                 this.pizzas = this.pizzas
                     .map(pizza =>
                         new Pizza(pizza.size, pizza.description));
@@ -25,7 +45,7 @@ document.addEventListener('alpine:init', () => {
                 // this.order(this.pizzas[2])
             },
             canBuy() {
-               return this.currentUser.balance >= total();
+                return this.currentUser.balance >= total();
             },
             getQtyTotal() {
                 return _.sumBy(this.orders, order => Number(order.qty))
@@ -75,13 +95,24 @@ document.addEventListener('alpine:init', () => {
                         loading: false,
                     };
                     this.steps = 1;
-                    new Receipt(this.currentUser, this.orders);
+                    // new Receipt(this.currentUser, this.orders);
+                    const receipt = new Receipt(this.currentUser, this.orders);
+                    this.saveReceiptsToLocalStorage(receipt);
                     this.clearCart()
                     this.showMenu = true;
                     this.checkoutData.loading = false;
                     this.checkoutData.state = null;
                 }, 3000);
 
+            },
+            saveReceiptsToLocalStorage(receipt) {
+                const savedReceipts = localStorage.getItem('receipts');
+                let receiptsArray = [];
+                if (savedReceipts) {
+                    receiptsArray = JSON.parse(savedReceipts);
+                }
+                receiptsArray.push(receipt);
+                localStorage.setItem('receipts', JSON.stringify(receiptsArray));
             },
             onCheckout() {
 
@@ -91,7 +122,7 @@ document.addEventListener('alpine:init', () => {
                 this.checkoutData.loading = true
                 this.steps = 4
                 setTimeout(() => {
-                    
+
                     this.checkoutData = {
                         ...this.checkoutData,
                         loading: false,
@@ -214,9 +245,30 @@ document.addEventListener('alpine:init', () => {
                 show() {
                     return !_.isEmpty(this.message)
                 },
+            },
+            showReceiptModal: false,
+            showReceipt() {
+                this.showReceiptModal = !this.showReceiptModal;
+                (this.showReceiptModal)
+                    ? this.showMenu = false
+                    : this.showMenu = true;
+            },
+            receipts: [],
+            removeReceipt(receiptId) {
+                const savedReceipts = localStorage.getItem('receipts');
+                if (savedReceipts) {
+                    let receipts = JSON.parse(savedReceipts);
+
+                    receipts = receipts.filter((receipt) => receipt.id !== receiptId); // Remove the receipt with the matching ID
+
+                    localStorage.setItem('receipts', JSON.stringify(receipts)); // Update the "receipts" key in localStorage with the modified array
+                    this.init()
+                }
+            },
+            clearAllReceipts() {
+                localStorage.removeItem('receipts');
+                this.init()
             }
-
-
         }
     })
 })
