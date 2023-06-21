@@ -12,48 +12,19 @@
     <script src="semantic/semantic.min.css"></script>
     <!-- <link rel="stylesheet" href="style.css"> -->
     <script src="https://cdn.jsdelivr.net/npm/lodash@4.17.21/lodash.min.js"></script>
-    <script type="text/JavaScript" src=" https://MomentJS.com/downloads/moment.js"></script>
     <script src="js/index.js"></script>
     <script src="js/app.js"></script>
     <title>Pizza Pamphlet</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
 </head>
 
 <style>
     body {
-        background: linear-gradient(to bottom right, #e0eaf1, #d8f5f2, #e8f7e9, #f8f9e8, #fef7e9);
+        background-color: rgb(143, 216, 192);
     }
-
-    table.ui.small.selectable.celled.table td {
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-    }
-
 
     .container {
         /* background-color: antiquewhite; */
-        display: inline-block;
-        margin: 0 0.5rem;
-
-        animation: pulse;
-        /* referring directly to the animation's @keyframe declaration */
-        animation-duration: 2s;
-        /* don't forget to set a duration! */
     }
-
-    .card {
-        animation: rotateIn;
-        /* referring directly to the animation's @keyframe declaration */
-        animation-duration: 1s;
-        /* don't forget to set a duration! */
-    }
-
-    .header {
-        animation: bounce;
-        animation-duration: 10s;
-    }
-
 </style>
 
 <body>
@@ -74,29 +45,24 @@
 
     <div class="ui container" x-data="data">
         <div :class="`ui labeled icon menu ${themeColor}`">
-            <a :class="`item ${showMenu ? 'active' : ''}`">
+            <a class="item active">
                 <i class="home icon"></i>
                 Home
             </a>
-            <a class="item ">
+            <a class="item active">
                 <i class="money icon"></i>
                 <b x-text="currentUser.getBalance()"></b>
             </a>
             <div class="right menu">
-                <a :class="`item ${showReceiptModal ? 'active' : ''}`" @click="showReceipt()"
-                    x-show="receipts.length !== 0">
-                    <i class="file icon"></i>
-                    <b x-text="receipts.length"></b>
-                </a>
-                <a class="item " x-show="getQtyTotal() > 0">
+                <a class="item active" x-show="getQtyTotal() > 0">
                     <i class="cart icon"></i>
                     <b x-text="getQtyTotal()">100</b>
                 </a>
-                <a class="item ">
+                <a class="item active">
                     <i class="user icon"></i>
                     <b x-text="currentUser.username">user</b>
                 </a>
-                <a class="item ">
+                <a class="item active">
                     <i class="sign-out icon"></i>
                     Logout
                 </a>
@@ -105,14 +71,14 @@
         </div>
 
         <!-- Checkout steps -->
-        <div class="ui steps" x-show="orders.length > 0">
-            <div :class="steps == 1 ? 'active step' : 'step disabled'">
+        <div class="ui mini steps" x-show="orders.length > 0">
+            <div :class="steps == 1 ? 'active step' : 'completed step disabled'">
                 <i class="info icon"></i>
                 <div class="content">
                     <div class="title">Confirm Order</div>
                 </div>
             </div>
-            <div :class="steps == 2 ? 'active step' : (steps == 3)? 'step disabled' : 'step'">
+            <div :class="steps == 2 ? 'active step' : (steps == 3)? 'completed step disabled' : 'step'">
                 <i class="payment icon"></i>
                 <div class="content">
                     <div class="title">Billing</div>
@@ -142,7 +108,7 @@
 
         <!-- Checkout Form -->
         <div class="ui segment" x-show="steps == 2">
-            <div class="ui form">
+            <div class="ui  form">
                 <div class="three fields">
                     <div class="field">
                         <label>Username</label>
@@ -160,7 +126,7 @@
                     </div>
                 </div>
                 <div class="field-inline" x-show="total() > currentUser.balance"">
-                  <div class=" ui red message">
+                  <div class="ui red message">
                     Insufficient funds. Please top up on your user profile
                 </div>
             </div>
@@ -174,74 +140,15 @@
         Success
     </div>
 
-
-    <!-- Receipt Modal -->
-    <br>
-
-    <div>
-        <div x-show="showReceiptModal" style="display: none;" class="modal">
-            <div class="modal-content">
-                <h2 class="ui header">Receipts</h2>
-                <template x-if="receipts.length > 0">
-                    <div class="ui cards">
-                        <template x-for="receipt in receipts">
-                            <div class="card" x-show="receipt.cart.length > 0">
-                                <div class="content">
-                                    <div class="header">Receipt ID: <span x-text="receipt.id"></span></div>
-                                    <div class="meta">Date: <span x-text="receipt.date"></span></div>
-                                    <div class="ui divider"></div>
-
-                                    <!-- Display pizza items -->
-                                    <div class="ui list">
-                                        <template x-for="item in receipt.cart">
-                                            <div class="item" x-show="item.qty > 0">
-                                                <div class="content">
-                                                    <div class="header" x-text="item.name"></div>
-                                                    <div class="description">Quantity: <span x-text="item.qty"></span>
-                                                    </div>
-                                                    <!-- Add more pizza item details as needed -->
-                                                </div>
-                                            </div>
-                                        </template>
-                                    </div>
-                                </div>
-                                <div class="extra content">
-                                    <span class="right floated">
-                                        <i @click="removeReceipt(receipt.id)" class="red close link icon"></i>
-                                    </span>
-                                    <span>
-                                        <p x-text="`R${receipt.total}`" class="description"><i class="money icon"></i>
-                                        </p>
-                                    </span>
-                                </div>
-                            </div>
-                        </template>
-                    </div>
-                </template>
-                <template x-if="receipts.length === 0">
-                    <p>No receipts available.</p>
-                </template>
-                <br />
-                <div class="ui buttons">
-                    <button class="ui primary button" @click="showReceipt()">Close</button>
-                    <div class="or"></div>
-                    <button @click="clearAllReceipts()" class="ui negative button">Clear</button>
-                </div>
-            </div>
-
-        </div>
-    </div>
-
-
     <!-- Pizza Cart -->
     <br>
 
-    <table class="ui small selectable celled table" x-show="showCart()">
+    <table class="ui selectable celled table" x-show="showCart()">
         <thead>
-            <th>Description</th>
-            <th>Price</th>
-            <th>Qty</th>
-            <th>Action</th>
+            <td>Description</td>
+            <td>Price</td>
+            <td>Qty</td>
+            <td>Action</td>
         </thead>
         <tbody>
 
@@ -278,7 +185,7 @@
 
         </tbody>
         <tfoot class="full-width">
-            <tr :class="currentUser.balance >= total() ? 'positive' : 'negative'">
+            <tr class="negative">
                 <td>
                     <h4 class="ui image header">
                         <img src="https://image.shutterstock.com/image-vector/italian-pizza-tomato-sausage-olive-600w-554691619.jpg"
@@ -302,8 +209,8 @@
                             <i class="delete icon"></i>
                         </button>
                         <div class="or"></div>
-                        <button x-bind:disabled="currentUser.balance < total()" class="ui icon secondary button"
-                            x-on:click="checkOutSteps()" data-position="right center" data-title="Checkout?"
+                        <button class="ui icon secondary button" x-on:click="checkOutSteps()"
+                            data-position="right center" data-title="Checkout?"
                             data-tooltip="Press to checkout and procceed with payment!">
                             <i class="cart icon"></i>
                         </button>
@@ -316,26 +223,25 @@
 
     <!-- Pizza Menu -->
     <div class="menu" x-show="showMenu">
-        <h4 class="ui black horizontal divider header animate__animated animate__rotateIn">
+        <h4 class="ui pink horizontal divider header">
             Pizza Hurt Menu
             <i class="food icon"></i>
         </h4>
-        <div class="ui stacked cards" style="display: flex; justify-content: center;">
+        <div class="ui three stacked cards">
             <template x-for="pizza in pizzas">
-                <div class="ui raised red card" style="font-family: 'Courier New', Courier, monospace;">
+                <div class="card">
                     <div class="image">
                         <img :src="pizza.img" class="ui small circular image">
                     </div>
-                    <div class="content" style="background: rgba(0, 0, 0, 0.857);">
-                        <div class="header" x-text="pizza.name" style="color: rgb(255, 0, 166);"></div>
+                    <div class="content">
+                        <div class="header" x-text="pizza.name"></div>
                         <div class="meta">
-                            <a style="color: turquoise;" x-text="`R${pizza.price}`">R0.00</a>
+                            <a x-text="`R${pizza.price}`">R0.00</a>
                         </div>
-                        <div class="description" x-text="pizza.description"
-                            style="color: rgb(153, 225, 29); text-transform: uppercase; ">
+                        <div class="description" x-text="pizza.description">
                         </div>
                     </div>
-                    <div class="extra content animate__animated animate__headShake" style="background: rgba(0, 0, 0, 0.857);">
+                    <div class="extra content">
                         <!-- <span x-text="pizza.available" class="right floated">
                                         2
                                     </span> -->
@@ -346,7 +252,6 @@
                         </div>
                     </div>
                 </div>
-
 
             </template>
         </div>
