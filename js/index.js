@@ -24,14 +24,14 @@ class Receipt {
     generateReceiptID() {
         const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
         let receiptID = '';
-      
+
         for (let i = 0; i < 8; i++) {
-          const randomIndex = Math.floor(Math.random() * characters.length);
-          receiptID += characters.charAt(randomIndex);
+            const randomIndex = Math.floor(Math.random() * characters.length);
+            receiptID += characters.charAt(randomIndex);
         }
-      
+
         return receiptID;
-      }
+    }
 }
 
 class Wallet {
@@ -71,26 +71,27 @@ class User extends Person {
 
 class Pizza {
     qty = 0;
-    id = 1;
     onCart = false;
-    constructor(size, description) {
+    constructor(size, description, price, type, id) {
         this.name = `${_.capitalize(size)} Pizza`;
         this.size = size;
-        this.available = size == 'large' ? 10 : size == 'medium' ? 50 : 35;
+        this.available = size == 'large' ? 10 : size == 'medium' ? 20 : 35;
         this.description = description;
-        this.price = prices[size]
+        this.type = type;
+        this.id = id;
+        this.price = price ? price : prices[size]
         this.img = `https://www.pngitem.com/pimgs/m/526-5261209_pizza-top-view-png-png-download-pepperoni-png.png`
     }
 
     add() {
         this.qty++;
-        this.available++;
+        this.available--;
     }
-
+    
     subtract() {
         if (this.qty > 0) {
             this.qty--;
-            this.available--;
+            this.available++;
         }
 
         if (this.qty == 0) {
@@ -129,3 +130,37 @@ class Cart {
         // return _.sumBy(pizzas, p => )
     }
 }
+
+
+class PizzaAPI {
+    constructor() {
+        this.url = 'https://pizza-api.projectcodex.net/api/pizzas';
+        this.pizzas = [];
+    }
+
+    getPizzas() {
+        return axios.get(this.url)
+            .then((result) => {
+                this.pizzas = result.data.pizzas;
+                return this.pizzas;
+            })
+            .catch((error) => {
+                console.error('Error fetching pizzas:', error);
+                return [];
+            });
+    }
+
+    addPizza(data) {
+        return axios.post(this.url, { data })
+            .then((result) => {
+                this.pizzas = result.data.pizzas;
+                return this.pizzas;
+            })
+            .catch((error) => {
+                console.error('Error adding pizza:', error);
+                return [];
+            });
+    }
+}
+
+
