@@ -37,10 +37,25 @@ document.addEventListener('alpine:init', () => {
                     this.receipts = [];
                 }
 
-                console.log(this.receipts);
-                this.pizzas = this.pizzas
-                    .map(pizza =>
-                        new Pizza(pizza.size, pizza.description));
+                const pizzaApi = new PizzaAPI();
+
+                pizzaApi.getPizzas()
+                    .then((pizzas) => {
+                        console.log(pizzas.length);
+                        this.pizzas = pizzas
+                            .map(pizza =>
+                                new Pizza(pizza.size, pizza.flavour, pizza.price, pizza.type, pizza.id));
+                        
+                        console.log(this.pizzas[0])
+                        return
+                    })
+                    .catch((error) => {
+                        console.error(error);
+                    });
+
+                // this.pizzas = this.pizzas
+                //     .map(pizza =>
+                //         new Pizza(pizza.size, pizza.description));
 
                 // this.order(this.pizzas[2])
             },
@@ -185,7 +200,7 @@ document.addEventListener('alpine:init', () => {
                     .isEmpty(_
                         .filter(this.orders,
                             order =>
-                                order.size === pizza.size
+                                order.id === pizza.id
                         )
                     )
                 ) {

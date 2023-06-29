@@ -6,6 +6,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <link rel="stylesheet" type="text/css" href="semantic/semantic.min.css">
     <script src="https://code.jquery.com/jquery-3.1.1.min.js"
         integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8=" crossorigin="anonymous"></script>
@@ -267,7 +268,7 @@
                                 <i class="minus icon"></i>
                             </button>
                             <div class="or"></div>
-                            <button class="ui positive icon button" @click="pizza.add()">
+                            <button x-bind:disabled="pizza.available < 1" class="ui positive icon button" @click="pizza.add()">
                                 <i class="plus icon"></i>
                             </button>
                         </div>
@@ -334,11 +335,9 @@
                         <div class="description" x-text="pizza.description"
                             style="color: rgb(153, 225, 29); text-transform: uppercase; ">
                         </div>
+                        <span x-text="pizza.available" style="color: aqua;" class="right floated"></span>
                     </div>
                     <div class="extra content animate__animated animate__headShake" style="background: rgba(0, 0, 0, 0.857);">
-                        <!-- <span x-text="pizza.available" class="right floated">
-                                        2
-                                    </span> -->
                         <div @click="order(pizza)"
                             :class="`ui ${(pizza.showOrder() ? 'red disabled' : 'black')} bottom attached button`">
                             <i class="add icon"></i>
