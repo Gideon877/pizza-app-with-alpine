@@ -6,6 +6,8 @@ document.addEventListener('alpine:init', () => {
         return {
             header: 'Pizza Hurt Menu',
             themeColor: 'pink',
+            appApi: {},
+            cartCode: '',
             init() {
 
                 if (_.isEmpty(this.currentUser)) {
@@ -37,16 +39,15 @@ document.addEventListener('alpine:init', () => {
                     this.receipts = [];
                 }
 
-                const pizzaApi = new PizzaAPI();
 
-                pizzaApi.getPizzas()
+                this.appApi = new PizzaAPI(this.currentUser.username);
+
+                this.appApi.getPizzas()
                     .then((pizzas) => {
                         console.log(pizzas.length);
                         this.pizzas = pizzas
                             .map(pizza =>
                                 new Pizza(pizza.size, pizza.flavour, pizza.price, pizza.type, pizza.id));
-                        
-                        console.log(this.pizzas[0])
                         return
                     })
                     .catch((error) => {

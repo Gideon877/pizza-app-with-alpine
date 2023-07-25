@@ -87,7 +87,7 @@ class Pizza {
         this.qty++;
         this.available--;
     }
-    
+
     subtract() {
         if (this.qty > 0) {
             this.qty--;
@@ -125,6 +125,17 @@ class Pizza {
 
 class Cart {
 
+    constructor(cart) {
+        const { cart_code, status, username, id } = cart;
+        this.id = id;
+        this.cart_code = cart_code;
+        this.username = username;
+        this.status = status;
+    }
+
+    getStatus() {
+        return this.status;
+    }
 
     getTotal() {
         // return _.sumBy(pizzas, p => )
@@ -133,13 +144,14 @@ class Cart {
 
 
 class PizzaAPI {
-    constructor() {
-        this.url = 'https://pizza-api.projectcodex.net/api/pizzas';
+    constructor(username) {
+        this.url = 'https://pizza-api.projectcodex.net';
         this.pizzas = [];
+        this.username = username
     }
 
     getPizzas() {
-        return axios.get(this.url)
+        return axios.get(`${this.url}/api/pizzas`)
             .then((result) => {
                 this.pizzas = result.data.pizzas;
                 return this.pizzas;
@@ -161,6 +173,62 @@ class PizzaAPI {
                 return [];
             });
     }
+
+    createPizzaCart() {
+        const url = `${this.url}/api/pizza-cart/create`;
+        // const username = req.query.username ? req.query.username : '';
+        return axios.get(url, { params: { username: this.username } });
+
+    }
+
+    getPizzaCart(cardCode) {
+        const url = `${this.url}/api/pizza-cart/${cardCode}/get`;
+        return axios.get(url, { params: { cart_code: cardCode } });
+
+
+    }
+
+    addToCart({ cart_code, pizza_id }) {
+        const url = `${this.url}/api/pizza-cart/add`;
+        return axios.post(url, { body: { cart_code, pizza_id } });
+
+    }
+
+    removeFromCart({ cart_code, pizza_id }) {
+        const url = `${this.url}/api/pizza-cart/remove`;
+        return axios.post(url, { body: { cart_code, pizza_id } });
+
+    }
+
+    payCart({ cart_code, amount }) {
+        const url = `${this.url}/api/pizza-cart/pay`;
+        return axios.post(url, { body: { cart_code, pizza_id } });
+
+    }
+
+    findAllCarts() {
+        const url = `${this.url}/api/pizza-cart/username/${this.username}/`;
+        return axios.get(url, { params: { username: this.username } }).then(r => r.data)
+
+    }
+
+    // findActiveCarts() {
+    //     const url = `${this.url}/api/pizza-cart/username/${username}/active`;
+
+    // }
+
+    featuredPizzas() {
+        const url = `${this.url}/api/pizzas/featured?username=${this.username}`;
+        return axios.get(url)
+
+    }
+
+    setFeatured(pizza_id) {
+        const url = `${this.url}/api/pizzas/featured/`;
+        return axios.post(url, { params: { username: this.username, pizza_id } });
+
+    }
+
 }
 
 

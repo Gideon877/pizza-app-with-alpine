@@ -6,23 +6,19 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <link rel="stylesheet" type="text/css" href="semantic/semantic.min.css">
     <script src="https://code.jquery.com/jquery-3.1.1.min.js"
         integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8=" crossorigin="anonymous"></script>
     <script src="semantic/semantic.min.css"></script>
     <!-- <link rel="stylesheet" href="style.css"> -->
     <script src="https://cdn.jsdelivr.net/npm/lodash@4.17.21/lodash.min.js"></script>
+    <script type="text/JavaScript" src=" https://MomentJS.com/downloads/moment.js"></script>
     <script src="js/index.js"></script>
-    <script src="js/app.js"></script>
+    <script src="js/api.js"></script>
     <title>Pizza Pamphlet</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
 </head>
-
-<style>
-    body {
-        background-color: rgb(143, 216, 192);
-    }
-
-</style>
 
 <body>
 
@@ -40,246 +36,164 @@
         - extra: add more toppings, make size be part of a single pizza (ubereats)
  -->
 
-    <div class="ui container" x-data="data">
-        <div :class="`ui labeled icon menu ${themeColor}`">
-            <a class="item active">
-                <i class="home icon"></i>
-                Home
-            </a>
-            <a class="item active">
-                <i class="money icon"></i>
-                <b x-text="currentUser.getBalance()"></b>
-            </a>
-            <div class="right menu">
-                <a class="item active" x-show="getQtyTotal() > 0">
-                    <i class="cart icon"></i>
-                    <b x-text="getQtyTotal()">100</b>
-                </a>
-                <a class="item active">
-                    <i class="user icon"></i>
-                    <b x-text="currentUser.username">user</b>
-                </a>
-                <a class="item active">
-                    <i class="sign-out icon"></i>
-                    Logout
-                </a>
+    <div class="ui container inverted" x-data="data">
 
-            </div>
-        </div>
+        <!-- Login Page -->
 
-        <!-- Checkout steps -->
-        <div class="ui mini steps" x-show="orders.length > 0">
-            <div :class="steps == 1 ? 'active step' : 'completed step disabled'">
-                <i class="info icon"></i>
-                <div class="content">
-                    <div class="title">Confirm Order</div>
-                </div>
-            </div>
-            <div :class="steps == 2 ? 'active step' : (steps == 3)? 'completed step disabled' : 'step'">
-                <i class="payment icon"></i>
-                <div class="content">
-                    <div class="title">Billing</div>
-                    <div class="description">Enter billing information</div>
-                </div>
-            </div>
-            <div :class="steps == 3 ? 'active step' :  'step'">
-                <i class="truck icon"></i>
-                <div class="content">
-                    <div class="title">Shipping</div>
-                    <div class="description">Choose your shipping options</div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Loading Message -->
-        <div class="ui icon message" x-show="checkoutData.loading">
-            <i class="notched circle loading icon"></i>
-            <div class="content">
-                <div class="header">
-                    Just one second
-                </div>
-                <p>We're processing your order. Please be patient.</p>
-            </div>
-        </div>
-
-
-        <!-- Checkout Form -->
-        <div class="ui segment" x-show="steps == 2">
-            <div class="ui  form">
-                <div class="three fields">
-                    <div class="field">
-                        <label>Username</label>
-                        <input placeholder="Username" readonly="" x-model="currentUser.username" type="text">
+        <div x-show="!isLoggedIn" class="ui middle aligned center aligned grid" style="height: 50vh;">
+            <div class="column" style="max-width: 450px;">
+                <h2 class="ui teal image header">
+                    <div class="content">
+                        Login to Your Account
                     </div>
-                    <div class="field">
-                        <label>Balance</label>
-                        <input x-model="currentUser.balance" readonly="" placeholder="balance" type="text">
-                    </div>
-                    <div class="field">
-                        <label>Confirm details</label>
-
-                        <button @click="onCheckout()" x-bind:disabled="total() > currentUser.balance"
-                            class="ui submit green  button">Order</button>
+                </h2>
+                <div class="ui large form">
+                    <div class="ui segment">
+                        <div class="field">
+                            <div class="ui left icon input">
+                                <i class="user icon"></i>
+                                <input x-model="username" type="text" placeholder="Username" id="usernameInput">
+                            </div>
+                        </div>
+                        <div class="ui fluid large teal submit button" @click="onLogin()">Login</div>
                     </div>
                 </div>
-                <div class="field-inline" x-show="total() > currentUser.balance"">
-                  <div class="ui red message">
-                    Insufficient funds. Please top up on your user profile
-                </div>
             </div>
         </div>
-    </div>
 
 
-    <!-- Done -->
+        <!-- Home page -->
+        <div x-show="isLoggedIn">
+            <!-- Navbar -->
+            <div class="ui inverted menu">
+                <div class="ui container">
+                    <a href="#" class="header item">Pizza Pamphlet</a>
+                    <div class="right menu">
+                        <a href="#menu" class="item">Menu</a>
+                        <a href="#cart" class="item">
+                            Cart
+                            <div class="ui teal circular label">0</div>
+                        </a>
+                        <a href="#payment" class="item">Payment</a>
+                        <a href="#orders" class="item">Order History</a>
+                    </div>
+                </div>
+            </div>
 
-    <div class="ui message" x-show="steps == 3">
-        Success
-    </div>
-
-    <!-- Pizza Cart -->
-    <br>
-
-    <table class="ui selectable celled table" x-show="showCart()">
-        <thead>
-            <td>Description</td>
-            <td>Price</td>
-            <td>Qty</td>
-            <td>Action</td>
-        </thead>
-        <tbody>
-
-            <template x-for="pizza in orders">
-                <tr x-show="pizza.qty > 0" :class="pizza.size">
-                    <td>
-                        <h4 class="ui image header">
-                            <img :src="pizza.img" class="ui mini rounded image">
-                            <div class="content">
-                                <b x-text="`${_.capitalize(pizza.size)}`"></b>
-                                <div x-text="pizza.description.substring(0,30)" class="sub header">
+            <!-- Menu Section -->
+            <section id="menu" class="ui container mt-5">
+                <h2 class="ui black horizontal divider header animate__animated animate__rotateIn">Pizza Hurt Menu <i class="food icon"></i>
+                </h2>
+                <div class="ui stackable cards">
+                    <div class="ui stacked cards" style="display: flex; justify-content: center;">
+                        <template x-for="pizza in pizzas">
+                            <div class="ui raised red card" style="font-family: 'Courier New', Courier, monospace;">
+                                <div class="image">
+                                    <img :src="pizza.img" class="ui small circular image">
+                                </div>
+                                <div class="content" style="background: rgba(0, 0, 0, 0.857);">
+                                    <div class="header" x-text="pizza.name" style="color: rgb(255, 0, 166);"></div>
+                                    <div class="meta">
+                                        <a style="color: turquoise;" x-text="`R${pizza.price}`">R0.00</a>
+                                    </div>
+                                    <div class="description" x-text="pizza.description"
+                                        style="color: rgb(153, 225, 29); text-transform: uppercase; ">
+                                    </div>
+                                    <span x-text="pizza.available" style="color: aqua;" class="right floated"></span>
+                                </div>
+                                <div class="extra content animate__animated animate__headShake" style="background: rgba(0, 0, 0, 0.857);">
+                                    <div @click="order(pizza)"
+                                        :class="`ui ${(pizza.showOrder() ? 'red disabled' : 'black')} bottom attached button`">
+                                        <i class="add icon"></i>
+                                        <b>Order</b>
+                                    </div>
                                 </div>
                             </div>
-
-                        </h4>
-                        <!-- <strong x-text="pizza.totalDescription()">Small pizzas total:</strong> -->
-                    </td>
-                    <td><span x-text="pizza.getSubTotal()"></span></td>
-                    <td>x<span x-text="pizza.qty"></span></td>
-                    <td>
-                        <div class="ui buttons">
-                            <button class="ui negative icon button" @click="pizza.subtract()">
-                                <i class="minus icon"></i>
-                            </button>
-                            <div class="or"></div>
-                            <button class="ui positive icon button" @click="pizza.add()">
-                                <i class="plus icon"></i>
-                            </button>
-                        </div>
-                    </td>
-                </tr>
-
-            </template>
-
-        </tbody>
-        <tfoot class="full-width">
-            <tr class="negative">
-                <td>
-                    <h4 class="ui image header">
-                        <img src="https://image.shutterstock.com/image-vector/italian-pizza-tomato-sausage-olive-600w-554691619.jpg"
-                            class="ui mini rounded image">
-                        <div class="content">
-                            <b>Total</b>
-                            <div class="sub header">
-                                Overall pizza total
-                            </div>
-                        </div>
-
-                    </h4>
-                </td>
-                <td><span class="totalPrice" x-text="getTotal()">0.00</span></td>
-                <td>x<strong style="font-size:medium; font-weight: bolder;" x-text="getQtyTotal()"></strong></td>
-                <td colspan="4">
-
-                    <div class="ui buttons">
-                        <button class="ui negative icon button" data-position="left center" data-title="Clear Cart?"
-                            x-on:click="clearCart()" data-tooltip="Press to clear the cart!">
-                            <i class="delete icon"></i>
-                        </button>
-                        <div class="or"></div>
-                        <button class="ui icon secondary button" x-on:click="checkOutSteps()"
-                            data-position="right center" data-title="Checkout?"
-                            data-tooltip="Press to checkout and procceed with payment!">
-                            <i class="cart icon"></i>
-                        </button>
-                    </div>
-                </td>
-            </tr>
-        </tfoot>
-    </table>
-
-
-    <!-- Pizza Menu -->
-    <div class="menu" x-show="showMenu">
-        <h4 class="ui pink horizontal divider header">
-            Pizza Hurt Menu
-            <i class="food icon"></i>
-        </h4>
-        <div class="ui three stacked cards">
-            <template x-for="pizza in pizzas">
-                <div class="card">
-                    <div class="image">
-                        <img :src="pizza.img" class="ui small circular image">
-                    </div>
-                    <div class="content">
-                        <div class="header" x-text="pizza.name"></div>
-                        <div class="meta">
-                            <a x-text="`R${pizza.price}`">R0.00</a>
-                        </div>
-                        <div class="description" x-text="pizza.description">
-                        </div>
-                    </div>
-                    <div class="extra content">
-                        <!-- <span x-text="pizza.available" class="right floated">
-                                        2
-                                    </span> -->
-                        <div @click="order(pizza)"
-                            :class="`ui ${(pizza.showOrder() ? 'red disabled' : 'black')} bottom attached button`">
-                            <i class="add icon"></i>
-                            <b>Order</b>
-                        </div>
+            
+            
+                        </template>
                     </div>
                 </div>
+            </section>
 
-            </template>
+            <!-- Payment Section -->
+            <section x-show="false" id="payment" class="ui container mt-5">
+                <h2 class="ui header">Payment</h2>
+                <!-- Add your payment form here -->
+                <form class="ui form">
+                    <div class="field">
+                        <label>Card Number</label>
+                        <input type="text" name="cardNumber" placeholder="Card Number">
+                    </div>
+                    <div class="field">
+                        <label>Expiration Date</label>
+                        <input type="text" name="expirationDate" placeholder="MM/YY">
+                    </div>
+                    <div class="field">
+                        <label>CVC</label>
+                        <input type="text" name="cvc" placeholder="CVC">
+                    </div>
+                    <button class="ui button primary" type="submit">Submit Payment</button>
+                </form>
+            </section>
+
+
+            <!-- Order History Section -->
+            <section x-show="false" id="orders" class="ui container mt-5">
+                <h2 class="ui header">Order History</h2>
+                <!-- Display historical orders here -->
+                <div class="ui relaxed divided list">
+                    <template x-for="order in orderHistory" :key="order.id">
+                        <div class="item">
+                            <div class="header" x-text="`Order #${order.id} - ${order.username}`"></div>
+                            <div class="content">
+                                <div class="ui list">
+                                    <template x-for="pizza in order.pizzas" :key="pizza.id">
+                                        <div class="item" x-text="`${pizza.qty} x ${pizza.size} ${pizza.flavour}`">
+                                        </div>
+                                    </template>
+                                </div>
+                            </div>
+                        </div>
+                    </template>
+                </div>
+            </section>
+
+            <!-- Cart Section -->
+            <section x-show="false" id="cart" class="ui container mt-5">
+                <h2 class="ui header">Cart</h2>
+                <!-- Display cart items here -->
+                <div class="ui list">
+                    <div class="item">Pizza 1 - Quantity: 2</div>
+                    <div class="item">Pizza 2 - Quantity: 1</div>
+                    <!-- Add more cart items as needed -->
+                </div>
+            </section>
+
+
         </div>
-    </div>
+
+        <br>
 
 
-    <!-- </div> -->
-
-    <h4 class="ui horizontal divider header">
-        <i class="location icon"></i>
-    </h4>
-
-
-    <!-- Footer -->
-    <div class="footer">
-        <div class="contact">
-            <strong>Contact us at:</strong>
-            (021)-541-1000
-
-            <strong>twitter /fb /insta </strong> @perfectpizza
+        <!-- Footer -->
+        <div class="ui inverted vertical footer segment" style="margin-top: auto;">
+            <div class="ui container">
+                <div class="ui stackable inverted divided equal height stackable grid" style="padding: 1em;">
+                    <div class="three wide column">
+                        <h4 class="ui inverted header">Contact us at:</h4>
+                        <p>(021)-541-1000</p>
+                        <p><strong>twitter /fb /insta</strong> @perfectpizza</p>
+                    </div>
+                    <div class="three wide column">
+                        <h4 class="ui inverted header">Pizza Plaza</h4>
+                        <p>Dough Road</p>
+                        <p>Base Town</p>
+                        <p>7890</p>
+                    </div>
+                </div>
+            </div>
         </div>
-        <div class="address">
-            Pizza Plaza
-            <br>
-            Dough Road
-            <br>
-            Base Town
-            <br>
-            7890
-        </div>
-    </div>
     </div>
 
 
